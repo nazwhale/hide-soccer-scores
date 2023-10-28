@@ -1,24 +1,82 @@
-// This function replaces score patterns with "SCORE HIDDEN"
-function hideScores(element) {
-    const scorePattern = /\b\d{1,2}-\d{1,2}\b/g;
-    element.textContent = element.textContent.replace(scorePattern, "SCORE HIDDEN");
+const imageUrl = chrome.runtime.getURL('icons/icon.png');
+
+function isHighlightsVideo(element) {
+    return element.textContent.toLowerCase().includes("highlights")
 }
 
-// Find video titles
-const videoTitles = document.querySelectorAll('#video-title');
-videoTitles.forEach(hideScores);
+// This function replaces score patterns with "SCORE HIDDEN"
+function hideScores(element) {
+    if (element == null) {
+        return;
+    }
+    element.textContent = "RESULT HIDDEN"
+}
 
-// Find potential thumbnails with scores
-const thumbnailTexts = document.querySelectorAll('.ytd-thumbnail-overlay-text-renderer');
-thumbnailTexts.forEach(hideScores);
+function hideVideo(v) {
+    const title = v.querySelector('#video-title');
+    if (!title) {
+        return;
+    }
 
-// Since YouTube loads content dynamically, we need to observe changes and hide scores as new content loads
+    if (!isHighlightsVideo(title)) {
+        return;
+    }
+
+    // select thumbnail
+    const thumbnail = v.querySelector('.yt-core-image--fill-parent-height');
+    if (!thumbnail) {
+        return;
+    }
+
+
+    // hide thumbnail
+    thumbnail.style.backgroundImage = `url(${imageUrl})`;
+    thumbnail.style.backgroundSize = 'cover';
+    thumbnail.style.backgroundRepeat = 'no-repeat';
+    thumbnail.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'; // 1x1 transparent gif
+
+    hideScores(title);
+}
+
+function hideCompact(v) {
+    // get all yt-formatted-string elements
+    const title = v.querySelector('.title');
+
+    console.log(title)
+    title.innerText = "asdf"
+
+    // select thumbnail
+    const thumbnail = v.querySelector('.yt-core-image--fill-parent-height');
+    if (!thumbnail) {
+        return;
+    }
+
+
+    // hide thumbnail
+    thumbnail.style.backgroundImage = `url(${imageUrl})`;
+    thumbnail.style.backgroundSize = 'cover';
+    thumbnail.style.backgroundRepeat = 'no-repeat';
+    thumbnail.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'; // 1x1 transparent gif
+
+    hideScores(title)
+}
+
+function hider() {
+    const videos = document.querySelectorAll('.ytd-video-renderer');
+    videos.forEach(v => {
+        hideVideo(v)
+    });
+
+    const compactVideos = document.querySelectorAll('.ytd-watch-card-compact-video-renderer');
+    compactVideos.forEach(v => {
+        hideCompact(v)
+    });
+
+}
+hider()
+
 const observer = new MutationObserver(() => {
-    const videoTitles = document.querySelectorAll('#video-title');
-    videoTitles.forEach(hideScores);
-
-    const thumbnailTexts = document.querySelectorAll('.ytd-thumbnail-overlay-text-renderer');
-    thumbnailTexts.forEach(hideScores);
+    hider()
 });
 
 observer.observe(document.body, {

@@ -12,5 +12,11 @@
       "matches": ["*://www.youtube.com/*"],
       "js": ["content.js"]
     }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/icon.png"],
+      "matches": ["*://www.youtube.com/*"]
+    }
   ]
 }
