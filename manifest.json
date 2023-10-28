@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Hide Soccer Scores on Youtube",
+  "version": "1.0",
+  "description": "Hides soccer scores on YouTube.",
+  "icons": {
+    "48": "icons/icon.png"
+  },
+  "permissions": ["activeTab"],
+  "content_scripts": [
+    {
+      "matches": ["*://www.youtube.com/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
